@@ -1,9 +1,12 @@
 package com.example.demoface;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
@@ -37,7 +40,7 @@ public class BlankFragment extends Fragment {
     TextView tvShare;
     CallbackManager callbackManager;
 
-
+    String[] listPermissions=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET};
     public BlankFragment() {
         // Required empty public constructor
     }
@@ -53,6 +56,12 @@ public class BlankFragment extends Fragment {
         shareDialog = new ShareDialog(BlankFragment.this);
         FacebookSdk.sdkInitialize(this.getContext());
         callbackManager = CallbackManager.Factory.create();
+        if(!checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)||!checkPermission(Manifest.permission.INTERNET))
+        {
+            this.requestPermissions(listPermissions,0);
+        }else {
+//Đã cấp quyền
+
         tvShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,7 +115,7 @@ public class BlankFragment extends Fragment {
 
             }
         });
-
+        }
 
         return v;
     }
@@ -134,4 +143,10 @@ public class BlankFragment extends Fragment {
 
         }
     };
+    boolean checkPermission(String per){
+        if(ContextCompat.checkSelfPermission(getContext(),per)!= PackageManager.PERMISSION_GRANTED){
+            return false;
+        }
+        return true;
+    }
 }
